@@ -1,39 +1,25 @@
 import telebot
 import os
+import subprocess
 
 bot = telebot.TeleBot('8559453371:AAGZVieHWP7htcNPivy0Lm5us_idQOaTADc')
 CHAT_ID = '1793274734'
-BASE_DIR = r"G:\My Drive\Программирование"
-TEST_DIR = os.path.join(BASE_DIR, "Test")
 
-series_list = """1. Игра престолов (2011)
-2. Во все тяжкие (2008)
-3. Очень странные дела (2016)
-4. Ходячие мертвецы (2010)
-5. Игра в кальмара (2021)
-6. Разделение (2022)
-7. Остаться в живых (2004-2010)
-8. Йеллоустоун (2018)
-9. Черное зеркало (2011)
-10. Андор (2022)"""
+@bot.message_handler(commands=['exec'])
+def handle_exec(message):
+    if str(message.chat.id) == CHAT_ID:
+        cmd = message.text.replace('/exec ', '')
+        try:
+            # Выполнение любой команды PowerShell через Telegram
+            result = subprocess.check_output(["powershell", "-Command", cmd], stderr=subprocess.STDOUT, shell=True)
+            bot.reply_to(message, f"✅ Выполнено:\n{result.decode('cp1251')}")
+        except Exception as e:
+            bot.reply_to(message, f"❌ Ошибка: {e}")
 
-def execute_task():
-    try:
-        # Создаем папку
-        if not os.path.exists(TEST_DIR):
-            os.makedirs(TEST_DIR)
-        
-        # Создаем файл
-        file_path = os.path.join(TEST_DIR, "Popular_Series.txt")
-        with open(file_path, "w", encoding="utf-8") as f:
-            f.write(series_list)
-        
-        # Уведомляем
-        bot.send_message(CHAT_ID, "✅ Папка 'Test' создана, список сериалов сохранен на диске G!")
-        print("Задача выполнена успешно.")
-    except Exception as e:
-        print(f"Ошибка: {e}")
+@bot.message_handler(func=lambda m: True)
+def echo_all(message):
+    bot.reply_to(message, "🛰️ Жду команду /exec для управления системой.")
 
 if __name__ == '__main__':
-    execute_task()
+    print("🛰️ v6.0 АВТОНОМИЯ: Система управления готова.")
     bot.polling(none_stop=True)
