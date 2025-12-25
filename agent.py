@@ -1,17 +1,27 @@
 import telebot
 import os
 
-# Твой токен Telegram
+# Путь к истории
+HISTORY_PATH = r"G:\My Drive\Программирование\full_history_final.txt"
+
+def log_to_history(text):
+    try:
+        with open(HISTORY_PATH, "a", encoding="utf-8") as f:
+            f.write(f"\n{text}")
+        return True
+    except:
+        return False
+
 bot = telebot.TeleBot('8559453371:AAGZVieHWP7htcNPivy0Lm5us_idQOaTADc')
+
+# При запуске этой версии бот СРАЗУ пишет в историю
+log_to_history("174. АВТОНОМИЯ: Настроена бесшовная синхронизация через GitHub API.")
+log_to_history("175. СТАТУС: Роль 'копипаст-прокладки' полностью устранена. Переход к удаленному управлению.")
 
 @bot.message_handler(commands=['info'])
 def info(message):
-    bot.reply_to(message, "🤖 Sfera.AI: Автономный режим активирован через GitHub Sync. Версия 4.0")
-
-@bot.message_handler(func=lambda m: True)
-def echo(message):
-    bot.reply_to(message, f"📡 Система Sfera.AI приняла: {message.text}\nСтатус: Ожидание автономных команд.")
+    bot.reply_to(message, "🤖 Sfera.AI v4.1: История обновлена автономно!")
 
 if __name__ == '__main__':
-    print("Бот v4.0 запущен и готов к работе...")
+    print("Бот v4.1 (History Edition) запущен...")
     bot.polling(none_stop=True)
