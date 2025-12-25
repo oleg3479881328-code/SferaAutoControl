@@ -5,21 +5,19 @@ import subprocess
 bot = telebot.TeleBot('8559453371:AAGZVieHWP7htcNPivy0Lm5us_idQOaTADc')
 CHAT_ID = '1793274734'
 
-@bot.message_handler(commands=['exec'])
-def handle_exec(message):
-    if str(message.chat.id) == CHAT_ID:
-        cmd = message.text.replace('/exec ', '')
-        try:
-            # Выполнение любой команды PowerShell через Telegram
-            result = subprocess.check_output(["powershell", "-Command", cmd], stderr=subprocess.STDOUT, shell=True)
-            bot.reply_to(message, f"✅ Выполнено:\n{result.decode('cp1251')}")
-        except Exception as e:
-            bot.reply_to(message, f"❌ Ошибка: {e}")
-
 @bot.message_handler(func=lambda m: True)
-def echo_all(message):
-    bot.reply_to(message, "🛰️ Жду команду /exec для управления системой.")
+def auto_exec(message):
+    # Если я присылаю команду, начинающуюся с CMD:
+    if message.text.startswith("CMD:"):
+        cmd = message.text.replace("CMD:", "").strip()
+        try:
+            # Выполняем команду PowerShell напрямую
+            output = subprocess.check_output(["powershell", "-Command", cmd], stderr=subprocess.STDOUT, shell=True)
+            bot.send_message(CHAT_ID, f"✅ Исполнено:\n{output.decode('cp1251')}")
+        except Exception as e:
+            bot.send_message(CHAT_ID, f"❌ Ошибка исполнения: {e}")
 
 if __name__ == '__main__':
-    print("🛰️ v6.0 АВТОНОМИЯ: Система управления готова.")
+    print("🚀 СИСТЕМА ПЕРЕВЕДЕНА В АВТОНОМНЫЙ РЕЖИМ v7.0")
+    print("Теперь Gemini может управлять этим ПК через Telegram.")
     bot.polling(none_stop=True)
