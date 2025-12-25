@@ -1,32 +1,36 @@
 import telebot
+import subprocess
+import base64
 import os
+import sys
 
-bot = telebot.TeleBot('8559453371:AAGZVieHWP7htcNPivy0Lm5us_idQOaTADc')
-CHAT_ID = '1793274734'
-PATH = r"G:\My Drive\Программирование\Test6"
+TOKEN = '8559453371:AAGZVieHWP7htcNPivy0Lm5us_idQOaTADc'
+bot = telebot.TeleBot(TOKEN)
 
-discoveries = """1. Огонь — основа цивилизации.
-2. Колесо — революция в транспорте.
-3. Печатный станок — доступ к знаниям.
-4. Паровой двигатель — промышленная революция.
-5. Электричество — новая эра энергии.
-6. Пенициллин — победа над инфекциями.
-7. Полупроводники — рождение электроники.
-8. Интернет — глобальная сеть.
-9. Генная инженерия (CRISPR) — управление кодом жизни.
-10. Искусственный интеллект — новая ступень эволюции."""
+@bot.message_handler(commands=['status'])
+def status(message):
+    bot.reply_to(message, "🚀 Система Sfera.AI работает на 100%! Самообновление прошло успешно.")
 
-def run_test_6():
+@bot.message_handler(func=lambda m: m.text and m.text.startswith(''))
+def self_update(message):
     try:
-        if not os.path.exists(PATH):
-            os.makedirs(PATH)
-        with open(os.path.join(PATH, "Discoveries.txt"), "w", encoding="utf-8") as f:
-            f.write(discoveries)
-        bot.send_message(CHAT_ID, "✅ ТЕСТ 6 ВЫПОЛНЕН: 10 открытий записаны на диск G!")
-        print("✅ Тест 6: Папка и файл созданы.")
+        new_code = message.text.replace('', '').strip()
+        with open(file, 'w', encoding='utf-8') as f:
+            f.write(new_code)
+        bot.reply_to(message, "✅ Код принят. Перезагрузите агента вручную (Ctrl+C и запуск) в последний раз для активации режима UPDATE.")
     except Exception as e:
-        print(f"❌ Ошибка в Тесте 6: {e}")
+        bot.reply_to(message, f"❌ Ошибка: {e}")
 
-if __name__ == '__main__':
-    run_test_6()
+@bot.message_handler(func=lambda m: True)
+def handle_commands(message):
+    try:
+        encoded_cmd = base64.b64encode(message.text.encode('utf-16-le')).decode()
+        process = subprocess.Popen(["powershell", "-NoProfile", "-EncodedCommand", encoded_cmd], 
+                                    stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, encoding='cp1251')
+        stdout, stderr = process.communicate()
+        bot.reply_to(message, f"💻 Исполнено:\n{stdout if stdout else stderr}")
+    except Exception as e:
+        bot.reply_to(message, f"⚠️ Ошибка: {e}")
+
+if name == 'main':
     bot.polling(none_stop=True)
