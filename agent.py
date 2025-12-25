@@ -1,25 +1,27 @@
 import telebot
 import os
-import subprocess
 
 bot = telebot.TeleBot('8559453371:AAGZVieHWP7htcNPivy0Lm5us_idQOaTADc')
+CHAT_ID = '842426027' # Твой ID
 HISTORY_PATH = r"G:\My Drive\Программирование\full_history_final.txt"
 
-def run_command(cmd):
+def log_and_notify(text, log_text):
     try:
-        result = subprocess.check_output(["powershell", "-Command", cmd], stderr=subprocess.STDOUT, shell=True)
-        return result.decode('cp1251')
+        # Пишем в историю
+        with open(HISTORY_PATH, "a", encoding="utf-8") as f:
+            f.write(f"\n{log_text}")
+        # Шлем уведомление
+        bot.send_message(CHAT_ID, f"🔔 Sfera.AI: {text}")
+        return True
     except Exception as e:
-        return str(e)
+        print(f"Ошибка: {e}")
+        return False
 
 @bot.message_handler(commands=['info'])
 def info(message):
-    bot.reply_to(message, "🚀 Sfera.AI v5.0: Мост автономии активен. Я готов исполнять команды Gemini.")
-
-# Функция автоматической записи при старте (для теста)
-with open(HISTORY_PATH, "a", encoding="utf-8") as f:
-    f.write("\n179. АВТОМАТИЗАЦИЯ: Система переведена на протокол v5.0. Прямое управление подтверждено.")
+    bot.reply_to(message, "🚀 v5.2 активна. Жду список сериалов для мониторинга.")
 
 if __name__ == '__main__':
-    print("🛰️ Sfera.AI v5.0 запущена. Теперь я слушаю GitHub и Telegram...")
+    log_and_notify("Система онлайн! Уведомления и история синхронизированы.", "180. УВЕДОМЛЕНИЯ: Настроен канал прямой связи через Telegram Bot API.")
+    print("🛰️ v5.2 запущена. Проверь Telegram и файл истории...")
     bot.polling(none_stop=True)
